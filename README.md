@@ -1,6 +1,6 @@
 # oneAday
 
-![animation](./blob/master/output/render.gif?raw=true)
+![animation](./output/render.gif?raw=true)
 
 create a new repo
 ```
