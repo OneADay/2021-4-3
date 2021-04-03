@@ -5,8 +5,7 @@ let saveThumbnail = (canvas: HTMLCanvasElement) => {
 
     const link = document.createElement('a');
     link.href = url;
-    const date = `${new Date().getFullYear()}/${new Date().getMonth() + 1}/${new Date().getDate()}`;
-    link.download = `OneADay_${date}_thumbnail.jpg`;
+    link.download = `thumbnail.jpg`;
 
     link.dispatchEvent(
       new MouseEvent('click', { 
