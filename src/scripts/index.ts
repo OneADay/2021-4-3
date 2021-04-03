@@ -5,22 +5,24 @@ import gsap from 'gsap';
 import BaseRecorder from './recorders/baseRecorder';
 import Recorder from './recorders/mediaRecorder';
 import CCaptureRecorder from './recorders/ccaptureRecorder';
+import saveThumbnail from './recorders/thumbnailCapture';
 
-import ThreeRenderer from './renderers/threerenderer';
+//import ThreeRenderer from './renderers/threeRenderer';
+import CanvasRenderer from './renderers/canvasRenderer';
 
 interface CanvasElement extends HTMLCanvasElement {               
     captureStream(int): MediaStream;             
 }
 
 const DEBUG: boolean = true;
-const THUMBNAIL: boolean = true;
+const THUMBNAIL: boolean = false;
 
 let tl;
 let items = [];
 
 class App {
     canvas: CanvasElement;
-    renderer: ThreeRenderer;
+    renderer: CanvasRenderer;
     recorder: BaseRecorder;
 
     animating: boolean = true;
@@ -29,20 +31,23 @@ class App {
         this.canvas = <CanvasElement> document.getElementById('canvas');
 
         this.recorder = new CCaptureRecorder(this.canvas);
-        this.recorder.start();
+        if (!DEBUG) {
+            this.recorder.start();
+        }
 
-        this.renderer = new ThreeRenderer(this.canvas);
+        this.renderer = new CanvasRenderer(this.canvas);
 
         this.createTimeline();
 
         this.animation();
 
         if (THUMBNAIL) {
-            this.saveThumbnail();
+            saveThumbnail(this.canvas);
         }
     }
 
     createTimeline() {
+        /*
         items = this.renderer.group.children;
 
         tl = gsap.timeline({
@@ -77,6 +82,7 @@ class App {
             tl.to(items[i].position, {x: x5, y: y5, duration: 1}, 4);
             tl.to(items[i].scale, {x: scale, y: scale, z: scale, duration: 1}, 4);
         }
+        */
     }
 
     handleTLComplete() {
@@ -88,27 +94,11 @@ class App {
         }, 100); //delay to capture last frame.
     }
 
-    saveThumbnail() {
-        let url = this.canvas.toDataURL('image/jpg');
-
-        const link = document.createElement('a');
-        link.href = url;
-        const date = `${new Date().getFullYear()}/${new Date().getMonth() + 1}/${new Date().getDate()}`;
-        link.download = `OneADay_${date}_thumbnail.jpg`;
-    
-        // this is necessary as link.click() does not work on the latest firefox
-        link.dispatchEvent(
-          new MouseEvent('click', { 
-            bubbles: true, 
-            cancelable: true, 
-            view: window 
-          })
-        );
-    }
-
     animation() {
         this.renderer.render();
-        this.recorder.update();
+        if (!DEBUG) {
+            this.recorder.update();
+        }
         if (this.animating) {
             requestAnimationFrame(() => this.animation());
         }
