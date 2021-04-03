@@ -13,6 +13,7 @@ export default class CCaptureRecorder implements BaseRecorder{
         this.canvas = canvas;
 
         this.capturer = new window.CCapture( { 
+            name: 'render',
             format: 'gif', 
             workersPath: 'libs/ccapture/' 
         });
