@@ -1,5 +1,5 @@
 import './index.less';
-import * as MathRandom from 'seedrandom';
+import * as seedrandom from 'seedrandom';
 import gsap from 'gsap';
 
 import BaseRecorder from './recorders/baseRecorder';
@@ -16,6 +16,8 @@ interface CanvasElement extends HTMLCanvasElement {
 
 const DEBUG: boolean = true;
 const THUMBNAIL: boolean = false;
+
+const srandom = seedrandom('a');
 
 let tl;
 let items = [];
@@ -47,8 +49,7 @@ class App {
     }
 
     createTimeline() {
-        /*
-        items = this.renderer.group.children;
+        items = this.renderer.items;
 
         tl = gsap.timeline({
             delay: 0.1,             // delay to capture first frame
@@ -59,30 +60,32 @@ class App {
         });
 
         for (let i = 0; i < items.length; i++) {
-            let x = Math.sin(i) * 0.25;
-            let y = Math.cos(i) * 0.25;
+            let item = items[i];
+            let out = srandom();
 
-            tl.to(items[i].position, {x, y, duration: 1}, 0);
+            for (let j = 0; j < item.children.length; j++) {
+                let child = item.children[j];
+                let time = out + srandom();
 
-            let x2 = Math.sin(i) * 1;
-            let y2 = Math.sin(i) * 1;
-            tl.to(items[i].position, {x: x2, y: y2, duration: 1}, 1);
+                tl.to(child, {
+                    color: this.renderer.randomColor(),
+                    duration: 0.2
+                }, time);
 
-            let x3 = Math.cos(i) * 1;
-            let y3 = -Math.cos(i) * 1;
-            tl.to(items[i].position, {x: x3, y: y3, duration: 1}, 2);
+                tl.to(child, {
+                    size: 0, 
+                    line: 0, 
+                    duration: 0.7,
+                    ease: "power2.in"
+                }, time);
 
-            let x4 = Math.cos(i) * 1.4;
-            let y4 = 0;
-            tl.to(items[i].position, {x: x4, y: y4, duration: 1}, 3);
-
-            let x5 = -2 + MathRandom(i)() * 4;
-            let y5 = -1 + MathRandom(i / 2)() * 2;
-            let scale = MathRandom(i * 5)() * 0.25;
-            tl.to(items[i].position, {x: x5, y: y5, duration: 1}, 4);
-            tl.to(items[i].scale, {x: scale, y: scale, z: scale, duration: 1}, 4);
+                tl.to(child, {
+                    size: this.renderer.randomSize(),
+                    line: this.renderer.randomLine(),
+                    color: this.renderer.randomColor(),
+                }, time + 1)
+            }
         }
-        */
     }
 
     handleTLComplete() {
