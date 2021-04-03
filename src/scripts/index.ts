@@ -13,6 +13,7 @@ interface CanvasElement extends HTMLCanvasElement {
 }
 
 const DEBUG: boolean = true;
+const THUMBNAIL: boolean = true;
 
 let tl;
 let items = [];
@@ -35,7 +36,10 @@ class App {
         this.createTimeline();
 
         this.animation();
-        requestAnimationFrame(() => this.animation());
+
+        if (THUMBNAIL) {
+            this.saveThumbnail();
+        }
     }
 
     createTimeline() {
@@ -45,6 +49,7 @@ class App {
             delay: 0.1,             // delay to capture first frame
             repeat: DEBUG ? -1 : 1, // if debug repeat forever
             yoyo: true, 
+            paused: THUMBNAIL,
             onComplete: () => this.handleTLComplete()
         });
 
@@ -81,6 +86,24 @@ class App {
                 this.animating = false;
             }
         }, 100); //delay to capture last frame.
+    }
+
+    saveThumbnail() {
+        let url = this.canvas.toDataURL('image/jpg');
+
+        const link = document.createElement('a');
+        link.href = url;
+        const date = `${new Date().getFullYear()}/${new Date().getMonth() + 1}/${new Date().getDate()}`;
+        link.download = `OneADay_${date}_thumbnail.jpg`;
+    
+        // this is necessary as link.click() does not work on the latest firefox
+        link.dispatchEvent(
+          new MouseEvent('click', { 
+            bubbles: true, 
+            cancelable: true, 
+            view: window 
+          })
+        );
     }
 
     animation() {

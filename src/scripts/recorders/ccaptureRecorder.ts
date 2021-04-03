@@ -16,8 +16,6 @@ export default class CCaptureRecorder implements BaseRecorder{
             format: 'gif', 
             workersPath: 'libs/ccapture/' 
         });
-
-        console.log(this.capturer);
     }
 
     public start() {
